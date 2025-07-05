@@ -1,12 +1,28 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.send('List all restaurants - to be implemented');
-});
+const {
+  createRestaurant,
+  getAllRestaurants,
+  getRestaurantById,
+  updateRestaurant,
+  deleteRestaurant,
+  searchRestaurantsByName,
+} = require('../controllers/restaurantController');
 
-router.get('/:id', (req, res) => {
-  res.send(`Details for restaurant ID: ${req.params.id}`);
-});
+const {protect} = require('../middleware/authMiddleware');
+const {adminOnly} = require('../middleware/adminMiddleware');
+const {ownerOnly} = require('../middleware/ownerMiddleware');
+const {verifyOwner} = require('../middleware/verifyownerMiddleware');
+
+router.get('/', getAllRestaurants);
+
+router.get('/:id', getRestaurantById);
+
+router.post('/', protect, ownerOnly, createRestaurant);
+
+router.put('/:id', protect, ownerOnly, verifyOwner, updateRestaurant);
+
+router.delete('/:id', protect, adminOnly, deleteRestaurant);
 
 module.exports = router;
